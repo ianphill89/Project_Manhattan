@@ -1,21 +1,4 @@
-int T;            //temperature in Fahrenheit
-int logs = 0;     //this variable is ONLY for to get the temperature direction
-
-const int ledFullCool = 8;
-const int ledCool = 9;
-const int ledReHeat = 10;
-const int ledHeat = 11;
-
-pinMode(ledFullCool, OUTPUT);
-pinMode(ledCool, OUTPUT);
-pinMode(ledReHeat, OUTPUT);
-pinMode(ledHeat, OUTPUT);
-
-void get_references() {
-  error = Sensor1.getTSicTemp(&temperature);  //turn the TSIC-Sensor ON -> messure -> OFF
-  temp=temperature/100.0;                     //convert to Celsius
-  T=round((temp*1.8)+32);                     //convert to Fahrenheit
-
+void get_references(int T) {
   //====FullCool====
   if(T<=75)
     digitalWrite(ledFullCool, LOW);
@@ -56,9 +39,4 @@ void get_references() {
   }
   
   logs = T;
-
-  Serial.print(T);
-  
-  delay(1000);
-  
 }
