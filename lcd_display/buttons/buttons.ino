@@ -1,4 +1,4 @@
-#define ACTIVATED LOW //Esto es para no tener que usar un external resistor 
+#define ACTIVATED LOW //Esto es para no tener que usar un external resistor
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -25,6 +25,7 @@ const int ledCool = 9;
 const int ledReHeat = 10;
 const int ledHeat = 11;
 
+//Temperatura variables
 int logs;
 int Temp;
 //============================
@@ -32,6 +33,7 @@ int Temp;
 //DEFINE ALL FUNCTIONS HERE
 int get_current_temp();
 void get_references(int T);
+void set_lcd(int value);
 
 void setup()
 {
@@ -61,41 +63,52 @@ void setup()
   lcd.init();
   // Turn on the blacklight and print a message.
   lcd.backlight();
-  lcd.print("Simulator v1");
+  lcd.print("Welcome to SIM");
   delay(2000);
+
+  //Initialize the SerialPort for
+  //to send the data to ESP Module
+  Serial.begin(9600);
 }
 
 void loop()
 {
   switchSimulatorState = digitalRead(switchSimulatorPin);
-  if(switchSimulatorState != ACTIVATED) {
-    lcd.clear();
-    lcd.print("Temp. = ");
-    lcd.print(Temp);
-    lcd.print((char)223);
-    lcd.print("F");
-
+  if(switchSimulatorState != ACTIVATED)
+  {
+    //Update temperature in the LCD
+    set_lcd(Temp);
+    
+    //Turn ON the Simulator LED
     digitalWrite(ledSimulatorPin, HIGH);
+
+    //Read the Up and Down states
     btnUpState = digitalRead(btnUpPin);
     btnDownState = digitalRead(btnDownPin);
 
+    //increse or decreser the Temp. value
     if(btnUpState == ACTIVATED) { Temp++; }
-    if(btnDownState == ACTIVATED) { Temp--; }
-
-    get_references(Temp);    
+    if(btnDownState == ACTIVATED) { Temp--; }   
   }
-  else {
+  else
+  {
+    //read the temperature sensor
     Temp = get_current_temp();
+
+    //Turn OFF the Simulator LED
     digitalWrite(ledSimulatorPin, LOW);
 
-    lcd.clear();
-    lcd.print("Temp. = ");
-    lcd.print(Temp);
-    lcd.print((char)223);
-    lcd.print("F");
-
-    get_references(Temp); 
+    //Update temperature in the LCD
+    set_lcd(Temp); 
   }
 
+  //send the Temp. to the function
+  //for to put the references
+  get_references(Temp);
+  
+  //"Send" the temperature value to
+  //server ESP Module
+  Serial.print(Temp);
+   
   delay(100);
 }
