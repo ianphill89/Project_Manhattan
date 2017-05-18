@@ -6,8 +6,9 @@
 const char *ssid = "ESPap";
 const char *password = "thereisnospoon";
 
-char data[5] = {'~'}; //este array es incluso para T>=100
-int pos = 1;
+char data[3] = {0};
+int pos = 0;
+boolean flag = false;
 
 ESP8266WebServer server(80);
 
@@ -37,11 +38,22 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     while (Serial.available() > 0) {
-        data[pos++] = Serial.read();
+      data[pos++] = Serial.read();
+      char c = Serial.read();
+      if(c != '\n' && isDigit(c)) {
+        data[pos++] = c;
+        flag = true;
+      }
+      else {
+        break;
+      }
     }
   }
-  data[pos] = '\0';
-  server.handleClient();
-  pos = 1;
-  delay(1000);
+  if(flag) {
+    data[pos] = '\0';
+    server.handleClient();
+    pos = 0;
+    flag = false;
+  }
+  delay(100);
 }

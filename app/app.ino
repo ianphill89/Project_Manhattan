@@ -102,13 +102,16 @@ void loop()
     set_lcd(Temp); 
   }
 
-  //send the Temp. to the function
-  //for to put the references
-  get_references(Temp);
+  //if (Temp != logs) {
+    //send the Temp. to the function for references
+    get_references(Temp);
   
-  //"Send" the temperature value to
-  //server ESP Module
-  Serial.print(Temp);
-   
-  delay(100);
+    //"Send" the temperature value to ESP Module Server,
+    //Serial.print("[");
+    Serial.println(Temp);
+    //Serial.print("]");
+  //}
+  
+  delay(100); //con este delay funciona bien hasta q le mando la data al esp
+  //delay(1000);
 }

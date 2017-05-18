@@ -33,23 +33,26 @@ void loop() {
   
   // If there are incoming bytes, print them
   if ( client.available() ) {
-    char c = client.read();
-    //Serial.print(c);
-    if(c=='~') {
-      flag = true;
-    }
-    else if(flag) {
-      result[pos++] = c;
+    while( client.available() ) {
+      char c = client.read();
+      if(c == '[') {
+        flag = true;
+      }
+      else if(flag && isDigit(c)) {
+        result[pos++] = c;
+      }
     }
   }
 
   //"cierro" el array
   result[pos] = '\0';
+  Serial.print("result BEFORE disconnected");
+  Serial.println(result);
   
   // If the server has disconnected, stop the client and WiFi
   if ( !client.connected() ) {
-
-    Serial.print(result);
+    Serial.print("result AFTER disconnected");
+    Serial.println(result);
 
     // Close socket and wait for disconnect from WiFi
     client.stop();
